@@ -33,6 +33,7 @@ int *computerPatternSimple(char* pattern, int pattern_size) {
 	return lps;
 }
 
+
 int *computerPattern(char* pattern, int pattern_size) {
 	int lps[pattern_size+1];
 	int i = 1;
@@ -62,29 +63,33 @@ int *computerPattern(char* pattern, int pattern_size) {
 		printf("%d\n",i);
 		j = max(0, lps[j]);
 	}
+	printf("Preprocessing list:");
 	for (int i = 0; i < pattern_size; i++) {
-		printf("%d, ", lps[i]);
+		printf("pos(%d) : %d, ", i, lps[i]);
 	}
 	return lps;
 }
 
-int kmp(char* text, char* pattern) {
+int* insert(int* occ, int item) {
+	return NULL;
+}
+
+int* kmp(char* text, char* pattern) {
 	int text_size = strlen(text);
 	int pattern_size = strlen(pattern);
 	printf("%d\n", pattern_size);
 	printf("%d\n", text_size);
 	int* lps;
 	lps = computerPatternSimple(pattern, pattern_size);
-
-	/*int *occ;
 	int i, j = 0;
+	int occ[1];
 
 	while (i <= text_size - pattern_size) {
 		while (j < text_size && text[i+j] == pattern[j]) {
 			j += 1;
 
 			if (j == text_size) {
-				occ[0] = i; //TODO: add element to dynamic array in C
+				insert(occ, i);
 			}
 
 			i += max(1, (j-lps[j]));
@@ -92,13 +97,15 @@ int kmp(char* text, char* pattern) {
 		}
 	}
 
-	return occ;*/
-	return 0;
+	return occ;
 }
 
 int main(void) {
 	char* text = "FEXLEIEXEXEDADCIDADES EXEXE ANDADES";
-	char* pattern = "AAAA";
-	int i = kmp(text, pattern);
+	char* pattern = "EXE";
+	int* occ = kmp(text, pattern);
+ 	for (int i = 0; i < sizeof(occ)/sizeof(occ[0]); i++) {
+ 		printf("%d", *(occ + i));
+ 	}
 	return 0;
 }
