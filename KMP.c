@@ -85,27 +85,25 @@ int* kmp(char* text, char* pattern) {
 	int occ[1];
 
 	while (i <= text_size - pattern_size) {
-		while (j < text_size && text[i+j] == pattern[j]) {
-			j += 1;
-
-			if (j == text_size) {
-				insert(occ, i);
-			}
-
-			i += max(1, (j-lps[j]));
-			j = max(0, lps[j]);
+		while (j < pattern_size && text[i+j] == pattern[j]) {
+			j += 1;		
 		}
+		
+		if (j == pattern_size) {
+				//insert(occ, i);
+			printf("%d", i);
+		}
+
+		i += max(1, (j-lps[j]));
+		j = max(0, lps[j]);
 	}
 
-	return occ;
+	return NULL;
 }
 
 int main(void) {
 	char* text = "FEXLEIEXEXEDADCIDADES EXEXE ANDADES";
 	char* pattern = "EXE";
 	int* occ = kmp(text, pattern);
- 	for (int i = 0; i < sizeof(occ)/sizeof(occ[0]); i++) {
- 		printf("%d", *(occ + i));
- 	}
 	return 0;
 }
