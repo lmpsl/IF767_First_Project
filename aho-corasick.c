@@ -132,11 +132,10 @@ int* fail(char **patterns, int nStates)
 }
 
 
-int scan(char* text, char** patterns, int np, int *f)
+int scan(char* text, int np, int *f)
 {
     int n = strlen(text);
-    int **o = (int**) calloc(sizeof(int), np);
-    int teste = 0;
+    int occCount = 0;
     int i, current;
 
     current = 0;
@@ -152,12 +151,11 @@ int scan(char* text, char** patterns, int np, int *f)
         current= g[current][text[i]];
         if(occ[current][0] > 1)
         {
-            teste++;
+            occCount++;
         }
     }
 
-    printf(" \n N:%d ", teste);
-    return teste;
+    return occCount;
 }
 
 
@@ -167,32 +165,62 @@ int main()
     char **v = (char**) malloc (sizeof(char*)*5);
     int *f;
     int i = 0;
+    int npat = 0;
+    int countLines = 0;
+    int countOcc = 0;
     int nStates;
 
-    FILE *text = fopen("myfile.txt", "r");
+    FILE *patterns = fopen("patterns.txt", "r");
     char *line = (char *) malloc(1024);
+    char **pat = (char **) malloc (sizeof(char*));
 
-    for(i=0; i<5; i++)
+    while(fgets(line,90,patterns)!= NULL)
     {
-       v[i] = (char*) malloc (sizeof(char)*10);
+        npat++;
+        pat = (char**) realloc(pat, sizeof(char*)*npat);
+        pat[npat-1] = (char*) malloc(sizeof(char)*(strlen(line)));
+        strcpy(pat[npat-1], line);
+
+        if(pat[npat-1][strlen(line)-1] =='\n')
+            pat[npat-1][strlen(line)-1] ='\0';
     }
+    fclose(patterns);
 
+    nStates = goTo(pat, npat);
+    f = fail(pat, nStates);
 
-
-    strcpy(v[0], "louis");
-    strcpy(v[1], "adabcada");
-    strcpy(v[2], "ha");
-    strcpy(v[3], "amor");
-    strcpy(v[4], "Teste");
-
-
-    nStates = goTo(v, 5);
-    f = fail(v, nStates);
-
+    FILE *text = fopen("text.txt", "r");
     while(fgets(line,1024,text)!= NULL)
-        i = i + scan(line, v, 5, f);
-
+    {
+        i = scan(line, npat, f);
+        if(i>0)
+        {
+            printf("%s \n", line);
+            countLines++;
+        }
+        countOcc = countOcc + i;
+    }
     fclose(text);
+
+    free(line);
+
+    for(i=0; i <npat; i++)
+    {
+        free(pat[i]);
+    }
+    free(pat);
+
+    free(f);
+    for(i=0; i<nStates; i++)
+    {
+        free(occ[i]);
+        free(g[i]);
+    }
+    free(occ);
+    free(g);
+
+    printf("Lines: %d \n", countLines);
+    printf("Occ: %d \n", countOcc);
 
     return 0;
 }
